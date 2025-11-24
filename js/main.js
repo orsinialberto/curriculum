@@ -364,30 +364,107 @@ if (document.readyState === 'loading') {
     typeExperienceTerminal();
 }
 
-// GitHub Projects Loader
+// GitHub Projects Loader con cache e gestione rate limit
 async function loadGitHubProjects() {
     const projectsGrid = document.getElementById('projects-grid');
     if (!projectsGrid) return;
     
-    const username = 'orsinialberto'; // Il tuo username GitHub
+    const username = 'orsinialberto';
     const apiUrl = `https://api.github.com/users/${username}/repos?sort=updated&per_page=4`;
+    const CACHE_KEY = 'github_projects_cache';
+    const CACHE_TIMESTAMP_KEY = 'github_projects_cache_timestamp';
+    const CACHE_DURATION = 60 * 60 * 1000; // 1 ora in millisecondi
+    
+    // Controlla se ci sono dati in cache validi
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    const cacheTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+    const now = Date.now();
+    
+    if (cachedData && cacheTimestamp && (now - parseInt(cacheTimestamp)) < CACHE_DURATION) {
+        try {
+            const projects = JSON.parse(cachedData);
+            projectsGrid.innerHTML = '';
+            projects.forEach((repo, index) => {
+                const card = createProjectCard(repo, index);
+                projectsGrid.appendChild(card);
+            });
+            
+            // Anima le card
+            animateProjectCards();
+            return;
+        } catch (e) {
+            // Se la cache è corrotta, procedi con il fetch
+            console.warn('Cache corrotta, procedo con fetch:', e);
+        }
+    }
     
     try {
-        // Mostra skeleton loader invece del messaggio di caricamento
+        // Mostra skeleton loader
         createSkeletonLoader(4);
-        
-        // Piccolo delay per mostrare il skeleton
         await new Promise(resolve => setTimeout(resolve, 300));
         
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('Errore nel caricamento');
+        
+        // Gestione specifica per rate limit
+        if (response.status === 403) {
+            const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+            const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+            
+            // Se abbiamo dati in cache (anche scaduti), usali
+            if (cachedData) {
+                try {
+                    const projects = JSON.parse(cachedData);
+                    projectsGrid.innerHTML = '';
+                    projects.forEach((repo, index) => {
+                        const card = createProjectCard(repo, index);
+                        projectsGrid.appendChild(card);
+                    });
+                    animateProjectCards();
+                    
+                    // Mostra un avviso che stiamo usando dati in cache
+                    const warning = document.createElement('div');
+                    warning.className = 'projects-warning';
+                    warning.innerHTML = `
+                        <p>⚠️ Limite API GitHub raggiunto. Mostro progetti dalla cache.</p>
+                        <p class="warning-subtitle">I dati potrebbero non essere aggiornati.</p>
+                    `;
+                    projectsGrid.parentElement.insertBefore(warning, projectsGrid);
+                    return;
+                } catch (e) {
+                    // Cache non valida, mostra messaggio di errore
+                }
+            }
+            
+            // Calcola quando il limite si resetta
+            let resetMessage = '';
+            if (rateLimitReset) {
+                const resetTime = new Date(parseInt(rateLimitReset) * 1000);
+                const hours = resetTime.getHours();
+                const minutes = resetTime.getMinutes();
+                resetMessage = `Il limite si resetta alle ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}.`;
+            }
+            
+            projectsGrid.innerHTML = `
+                <div class="projects-error">
+                    <p><strong>Limite API GitHub raggiunto</strong></p>
+                    <p>Hai superato il limite di chiamate giornaliere all'API di GitHub.</p>
+                    <p class="error-subtitle">${resetMessage}</p>
+                    <p class="error-subtitle">Visita il mio <a href="https://github.com/${username}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-color);">profilo GitHub</a> per vedere i progetti.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        if (!response.ok) {
+            throw new Error(`Errore HTTP: ${response.status}`);
+        }
         
         const repos = await response.json();
         
-        // Filtra solo i repository pubblici e non fork (opzionale)
+        // Filtra solo i repository pubblici e non fork
         const projects = repos
             .filter(repo => !repo.fork && repo.private === false)
-            .slice(0, 4); // Mostra solo i 4 più recenti
+            .slice(0, 4);
         
         if (projects.length === 0) {
             projectsGrid.innerHTML = '<div class="projects-error">Nessun progetto trovato</div>';
@@ -396,11 +473,15 @@ async function loadGitHubProjects() {
         
         projectsGrid.innerHTML = '';
         
-        // Carica i linguaggi per ogni progetto
+        // Carica i linguaggi per ogni progetto (con gestione errori)
         const projectsWithLanguages = await Promise.all(
             projects.map(async (repo) => {
                 try {
                     const langResponse = await fetch(repo.languages_url);
+                    if (!langResponse.ok) {
+                        // Se anche questa chiamata fallisce per rate limit, usa dati vuoti
+                        return { ...repo, languages: {} };
+                    }
                     const languages = await langResponse.json();
                     return { ...repo, languages };
                 } catch {
@@ -409,29 +490,71 @@ async function loadGitHubProjects() {
             })
         );
         
+        // Salva in cache
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(projectsWithLanguages));
+            localStorage.setItem(CACHE_TIMESTAMP_KEY, now.toString());
+        } catch (e) {
+            console.warn('Impossibile salvare in cache:', e);
+        }
+        
         projectsWithLanguages.forEach((repo, index) => {
             const card = createProjectCard(repo, index);
             projectsGrid.appendChild(card);
         });
         
-        // Anima le card quando la sezione diventa visibile
-        const projectsSection = document.getElementById('projects');
-        if (projectsSection) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animate');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
-            
-            observer.observe(projectsSection);
-        }
+        // Anima le card
+        animateProjectCards();
         
     } catch (error) {
         console.error('Errore nel caricamento progetti:', error);
-        projectsGrid.innerHTML = '<div class="projects-error">Errore nel caricamento dei progetti</div>';
+        
+        // Prova a usare la cache anche se scaduta come fallback
+        if (cachedData) {
+            try {
+                const projects = JSON.parse(cachedData);
+                projectsGrid.innerHTML = '';
+                projects.forEach((repo, index) => {
+                    const card = createProjectCard(repo, index);
+                    projectsGrid.appendChild(card);
+                });
+                animateProjectCards();
+                
+                const warning = document.createElement('div');
+                warning.className = 'projects-warning';
+                warning.innerHTML = `
+                    <p>⚠️ Errore nel caricamento. Mostro progetti dalla cache.</p>
+                `;
+                projectsGrid.parentElement.insertBefore(warning, projectsGrid);
+                return;
+            } catch (e) {
+                // Cache non valida
+            }
+        }
+        
+        projectsGrid.innerHTML = `
+            <div class="projects-error">
+                <p><strong>Errore nel caricamento dei progetti</strong></p>
+                <p>Visita il mio <a href="https://github.com/${username}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-color);">profilo GitHub</a> per vedere i progetti.</p>
+            </div>
+        `;
+    }
+}
+
+// Funzione helper per animare le card dei progetti
+function animateProjectCards() {
+    const projectsSection = document.getElementById('projects');
+    if (projectsSection) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        observer.observe(projectsSection);
     }
 }
 

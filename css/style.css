@@ -793,6 +793,52 @@ body {
     color: var(--text-secondary);
     padding: 2rem;
     grid-column: 1 / -1;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.projects-error p {
+    margin: 0.5rem 0;
+}
+
+.projects-error a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.projects-error a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+.error-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+.projects-warning {
+    text-align: center;
+    color: #fbbf24;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.projects-warning p {
+    margin: 0.25rem 0;
+}
+
+.warning-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
 }
 
 @media (max-width: 768px) {
