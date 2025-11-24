@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Curriculum vitae - Software Developer">
+    <title>Alberto Orsini - Software Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grandiflora+One&family=Megrim&family=Poiret+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="#home">Curriculum Vitae</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#about">PROFILO</a></li>
+                <li><a href="#experience">ESPERIENZE</a></li>
+                <li><a href="#education">FORMAZIONE</a></li>
+                <li><a href="#skills">COMPETENZE</a></li>
+                <li><a href="#soft-skills">SOFT SKILLS</a></li>
+                <li><a href="#languages">LINGUE</a></li>
+                <li><a href="#projects">PROGETTI</a></li>
+                <li><a href="#contact">CONTATTI</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header id="home" class="header">
+        <div class="container">
+            <h1 class="header-name">Alberto Orsini</h1>
+            <h2 class="header-role">Web Developer</h2>
+            <div class="header-contacts">
+                <a href="mailto:orsini.alberto@hotmail.it" class="contact-icon" aria-label="Email">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </a>
+                <a href="https://github.com/orsinialberto" target="_blank" rel="noopener noreferrer" class="contact-icon" aria-label="GitHub">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                    </svg>
+                </a>
+                <a href="https://www.linkedin.com/in/alberto-orsini-51219813a" target="_blank" rel="noopener noreferrer" class="contact-icon" aria-label="LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                        <rect x="2" y="9" width="4" height="12"></rect>
+                        <circle cx="4" cy="4" r="2"></circle>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="container">
+                <h2 class="section-title">Profilo</h2>
+                <div class="section-content">
+                    <p>
+                        Back-end Engineer con esperienza in Java e sviluppo di API REST. 
+                        Contribuisco all’evoluzione tecnica del prodotto e supporto il team come Scrum Master in contesti Agile, 
+                        favorendo qualità, collaborazione e miglioramento continuo.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="section">
+            <div class="container">
+                <h2 class="section-title">Esperienza Professionale</h2>
+                <div class="terminal-container">
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-buttons">
+                                <span class="terminal-btn terminal-btn-close"></span>
+                                <span class="terminal-btn terminal-btn-minimize"></span>
+                                <span class="terminal-btn terminal-btn-maximize"></span>
+                            </div>
+                            <div class="terminal-title">Terminal — bash</div>
+                        </div>
+                        <div class="terminal-body" id="experience-terminal-output">
+                            <!-- I comandi verranno aggiunti dinamicamente via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="section">
+            <div class="container">
+                <h2 class="section-title">Formazione</h2>
+                <div class="section-content">
+                    <div class="education-item">
+                        <div class="education-header">
+                            <img src="images/bicocca-logo.svg" alt="Università Bicocca" class="education-logo">
+                            <div class="education-info">
+                                <h3 class="education-degree">Laurea in Informatica - classe delle lauree in scienze e tecnologie informatiche</h3>
+                                <p class="education-institution">Università degli studi di Milano - Bicocca</p>
+                                <p class="education-period">2012 - 2017</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section">
+            <div class="container">
+                <h2 class="section-title">Competenze Tecniche</h2>
+                <div class="section-content">
+                    <div class="skills-tree">
+                        <div class="leaves-container">
+                            <div class="leaf" data-tech="java" title="Java">
+                                <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg" alt="Java" />
+                            </div>
+                            <div class="leaf" data-tech="springboot" title="Spring Boot">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/spring.svg" alt="Spring Boot" />
+                            </div>
+
+
+                            <div class="leaf" data-tech="camel" title="Apache Camel">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/apache.svg" alt="Apache Camel" />
+                            </div>
+
+                            <div class="leaf" data-tech="mysql" title="MySQL">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/mysql.svg" alt="MySQL" />
+                            </div>
+                            <div class="leaf" data-tech="vertica" title="Vertica">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/hp.svg" alt="Vertica" />
+                            </div>
+                            <div class="leaf" data-tech="elasticsearch" title="Elasticsearch">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/elasticsearch.svg" alt="Elasticsearch" />
+                            </div>
+
+                            <div class="leaf" data-tech="redis" title="Redis">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/redis.svg" alt="Redis" />
+                            </div>
+                            <div class="leaf" data-tech="kafka" title="Kafka">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/apachekafka.svg" alt="Kafka" />
+                            </div>
+                            <div class="leaf" data-tech="activemq" title="ActiveMQ">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/apache.svg" alt="ActiveMQ" />
+                            </div>
+                            <div class="leaf" data-tech="git" title="Git">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/git.svg" alt="Git" />
+                            </div>
+                            <div class="leaf" data-tech="docker" title="Docker">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/docker.svg" alt="Docker" />
+                            </div>
+                            <div class="leaf" data-tech="kubernetes" title="Kubernetes">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/kubernetes.svg" alt="Kubernetes" />
+                            </div>
+                            <div class="leaf" data-tech="azure" title="Azure">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/microsoftazure.svg" alt="Azure" />
+                            </div>
+                            <div class="leaf" data-tech="maven" title="Maven">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/apachemaven.svg" alt="Maven" />
+                            </div>
+                            <div class="leaf" data-tech="intellij" title="IntelliJ">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/intellijidea.svg" alt="IntelliJ" />
+                            </div>
+
+                            <div class="leaf" data-tech="graylog" title="Graylog">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/graylog.svg" alt="Graylog" />
+                            </div>
+                            <div class="leaf" data-tech="linux" title="Linux">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/linux.svg" alt="Linux" />
+                            </div>
+                            <div class="leaf" data-tech="macos" title="macOS">
+                                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/apple.svg" alt="macOS" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Soft Skills Section -->
+        <section id="soft-skills" class="section">
+            <div class="container">
+                <h2 class="section-title">Soft Skills</h2>
+                <div class="section-content">
+                    <div class="soft-skills-grid">
+                        <div class="soft-skill-card" data-skill="leadership">
+                            <div class="skill-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <h3 class="skill-name">Leadership</h3>
+                            <p class="skill-description">Scrum Master con esperienza nella facilitazione di team e cerimonie Agile</p>
+                        </div>
+                        <div class="soft-skill-card" data-skill="problem-solving">
+                            <div class="skill-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                            </div>
+                            <h3 class="skill-name">Problem Solving</h3>
+                            <p class="skill-description">Analisi e risoluzione di problemi complessi in contesti ad alta scalabilità</p>
+                        </div>
+                        <div class="soft-skill-card" data-skill="communication">
+                            <div class="skill-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="skill-name">Comunicazione</h3>
+                            <p class="skill-description">Collaborazione efficace con team multidisciplinari e stakeholder</p>
+                        </div>
+                        <div class="soft-skill-card" data-skill="adaptability">
+                            <div class="skill-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                            <h3 class="skill-name">Adattabilità</h3>
+                            <p class="skill-description">Flessibilità nel gestire cambiamenti e nuove tecnologie</p>
+                        </div>
+                        <div class="soft-skill-card" data-skill="teamwork">
+                            <div class="skill-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <h3 class="skill-name">Teamwork</h3>
+                            <p class="skill-description">Collaborazione efficace in team distribuiti e multidisciplinari</p>
+                        </div>
+                        <div class="soft-skill-card" data-skill="quality">
+                            <div class="skill-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
+                            <h3 class="skill-name">Focus sulla Qualità</h3>
+                            <p class="skill-description">Best practices, testing e monitoraggio per garantire eccellenza</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Languages Section -->
+        <section id="languages" class="section">
+            <div class="container">
+                <h2 class="section-title">Lingue</h2>
+                <div class="section-content">
+                    <div class="languages-container">
+                        <div class="language-item">
+                            <div class="language-header">
+                                <span class="language-name">Italiano</span>
+                                <span class="language-level">Madrelingua</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-percentage="100" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="language-item">
+                            <div class="language-header">
+                                <span class="language-name">Inglese</span>
+                                <span class="language-level">Intermedio</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-percentage="70" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section">
+            <div class="container">
+                <h2 class="section-title">Progetti</h2>
+                <div class="section-content">
+                    <div class="projects-grid" id="projects-grid">
+                        <!-- I progetti verranno caricati dinamicamente via JS -->
+                        <div class="projects-loading">Caricamento progetti...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="container">
+            <h2 class="section-title">Contatti</h2>
+            <div class="footer-contacts">
+                <a href="mailto:orsini.alberto@hotmail.it" class="contact-icon" aria-label="Email">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </a>
+                <a href="https://github.com/orsinialberto" target="_blank" rel="noopener noreferrer" class="contact-icon" aria-label="GitHub">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                    </svg>
+                </a>
+                <a href="https://www.linkedin.com/in/alberto-orsini-51219813a" target="_blank" rel="noopener noreferrer" class="contact-icon" aria-label="LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                        <rect x="2" y="9" width="4" height="12"></rect>
+                        <circle cx="4" cy="4" r="2"></circle>
+                    </svg>
+                </a>
+            </div>
+            <div class="footer-info">
+                <p><strong>Email:</strong> orsini.alberto@hotmail.it</p>
+                <p><strong>Phone:</strong> +39 3492169097</p>
+                <p><strong>Indirizzo:</strong> Via privata Casentino, 6, Milano (MI), 20159</p>
+            </div>
+            <div class="header-actions">
+                <button id="download-pdf" class="download-btn" aria-label="Scarica PDF">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Curriculum Vitae</span>
+                </button>
+            </div>
+            <p class="footer-copyright">&copy; 2025 Alberto Orsini. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
+
