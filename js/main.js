@@ -1,4 +1,17 @@
 // ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+// Helper per inizializzazione DOM
+function onDOMReady(callback) {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', callback);
+    } else {
+        callback();
+    }
+}
+
+// ============================================
 // INTERNATIONALIZATION (i18n)
 // ============================================
 
@@ -99,15 +112,10 @@ function initLanguage() {
 }
 
 // Esegui quando il DOM è pronto
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        initLanguage();
-        initHamburgerMenu();
-    });
-} else {
+onDOMReady(() => {
     initLanguage();
     initHamburgerMenu();
-}
+});
 
 // Hamburger Menu Toggle
 function initHamburgerMenu() {
@@ -167,28 +175,58 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Highlight active navigation item on scroll
-const sections = document.querySelectorAll('section[id], header[id], footer[id]');
-const navLinks = document.querySelectorAll('.nav-menu a');
+// Unified scroll handler
+let scrollTicking = false;
 
-window.addEventListener('scroll', () => {
-    let current = '';
+function handleScroll() {
+    if (scrollTicking) return;
     
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
-        if (window.pageYOffset >= sectionTop - 100) {
-            current = section.getAttribute('id');
+    scrollTicking = true;
+    window.requestAnimationFrame(() => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Update scroll progress bar
+        const progressBar = document.querySelector('.scroll-progress');
+        if (progressBar) {
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            progressBar.style.width = scrollPercent + '%';
         }
-    });
+        
+        // Highlight active navigation item
+        const sections = document.querySelectorAll('section[id], header[id], footer[id]');
+        const navLinks = document.querySelectorAll('.nav-menu a');
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (scrollTop >= sectionTop - 100) {
+                current = section.getAttribute('id');
+            }
+        });
 
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Update navbar scroll state
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            if (scrollTop > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
         }
+        
+        scrollTicking = false;
     });
-});
+}
+
+window.addEventListener('scroll', handleScroll, { passive: true });
 
 // Intersection Observer for scroll animations
 const observerOptions = {
@@ -210,8 +248,6 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll('.section').forEach(section => {
     observer.observe(section);
 });
-
-// Progress bars animation removed - languages section removed
 
 // Skills section - le competenze sono ora mostrate direttamente nell'HTML
 
@@ -299,6 +335,123 @@ function createSkeletonLoader(count = 4) {
     }
 }
 
+// Helper function per processare output con colori
+function processTerminalOutputWithColors(text) {
+    // Divide in righe per processare meglio
+    const lines = text.split('\n');
+    let result = '';
+    
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+        const line = lines[lineIdx];
+        const isLastLine = lineIdx === lines.length - 1;
+        
+        // Se la riga inizia con * commit, colora tutto in giallo e gestisci HEAD/tag
+        if (line.startsWith('* commit')) {
+            let processedLine = '<span class="git-commit">* commit';
+            let restOfLine = line.substring(8);
+            
+            // Processa HEAD e tag nella riga originale (prima di aggiungere markup)
+            const originalLine = line;
+            
+            // Trova tutte le occorrenze di (HEAD e (tag: nella riga originale
+            let parts = [];
+            let lastIndex = 0;
+            
+            // Trova HEAD
+            const headMatch = originalLine.match(/\(HEAD[^)]*\)/);
+            // Trova tag
+            const tagMatch = originalLine.match(/\(tag:[^)]*\)/);
+            
+            // Costruisci la riga processata
+            let lineAfterCommit = originalLine.substring(8);
+            
+            if (headMatch && tagMatch) {
+                // Entrambi presenti, processa nell'ordine in cui appaiono
+                const headIndex = originalLine.indexOf(headMatch[0]);
+                const tagIndex = originalLine.indexOf(tagMatch[0]);
+                
+                if (headIndex < tagIndex) {
+                    // HEAD prima di tag
+                    const beforeHead = lineAfterCommit.substring(0, headIndex - 8);
+                    const headPart = lineAfterCommit.substring(headIndex - 8, headIndex - 8 + headMatch[0].length);
+                    const between = lineAfterCommit.substring(headIndex - 8 + headMatch[0].length, tagIndex - 8);
+                    const tagPart = lineAfterCommit.substring(tagIndex - 8, tagIndex - 8 + tagMatch[0].length);
+                    const after = lineAfterCommit.substring(tagIndex - 8 + tagMatch[0].length);
+                    
+                    processedLine += beforeHead + '<span class="git-head">' + headPart + '</span>' + between + '<span class="git-tag">' + tagPart + '</span>' + after;
+                } else {
+                    // Tag prima di HEAD
+                    const beforeTag = lineAfterCommit.substring(0, tagIndex - 8);
+                    const tagPart = lineAfterCommit.substring(tagIndex - 8, tagIndex - 8 + tagMatch[0].length);
+                    const between = lineAfterCommit.substring(tagIndex - 8 + tagMatch[0].length, headIndex - 8);
+                    const headPart = lineAfterCommit.substring(headIndex - 8, headIndex - 8 + headMatch[0].length);
+                    const after = lineAfterCommit.substring(headIndex - 8 + headMatch[0].length);
+                    
+                    processedLine += beforeTag + '<span class="git-tag">' + tagPart + '</span>' + between + '<span class="git-head">' + headPart + '</span>' + after;
+                }
+            } else if (headMatch) {
+                // Solo HEAD
+                const headIndex = originalLine.indexOf(headMatch[0]);
+                const beforeHead = lineAfterCommit.substring(0, headIndex - 8);
+                const headPart = lineAfterCommit.substring(headIndex - 8, headIndex - 8 + headMatch[0].length);
+                const after = lineAfterCommit.substring(headIndex - 8 + headMatch[0].length);
+                processedLine += beforeHead + '<span class="git-head">' + headPart + '</span>' + after;
+            } else if (tagMatch) {
+                // Solo tag
+                const tagIndex = originalLine.indexOf(tagMatch[0]);
+                const beforeTag = lineAfterCommit.substring(0, tagIndex - 8);
+                const tagPart = lineAfterCommit.substring(tagIndex - 8, tagIndex - 8 + tagMatch[0].length);
+                const after = lineAfterCommit.substring(tagIndex - 8 + tagMatch[0].length);
+                processedLine += beforeTag + '<span class="git-tag">' + tagPart + '</span>' + after;
+            } else {
+                processedLine += lineAfterCommit;
+            }
+            
+            processedLine += '</span>';
+            result += processedLine;
+        } else {
+            // Per le altre righe, processa i pipe
+            let processedLine = '';
+            for (let i = 0; i < line.length; i++) {
+                if (line[i] === '|') {
+                    processedLine += '<span class="git-pipe">|</span>';
+                } else {
+                    processedLine += line[i];
+                }
+            }
+            result += processedLine;
+        }
+        
+        if (!isLastLine) {
+            result += '\n';
+        }
+    }
+    
+    return result;
+}
+
+// Helper function per inizializzare terminal observer
+function initTerminalObserver(experienceSection, lang, typeNextChar) {
+    if (experienceSection && !experienceSection.dataset.terminalLang) {
+        experienceSection.dataset.terminalLang = lang;
+        const terminalObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('terminal-started')) {
+                    entry.target.classList.add('terminal-started');
+                    setTimeout(() => typeNextChar(), 200);
+                    terminalObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        terminalObserver.observe(experienceSection);
+    } else if (experienceSection && experienceSection.dataset.terminalLang !== lang) {
+        experienceSection.classList.remove('terminal-started');
+        experienceSection.dataset.terminalLang = lang;
+        setTimeout(() => typeNextChar(), 200);
+    }
+}
+
 // Experience terminal typing effect
 function typeExperienceTerminal(lang = currentLanguage) {
     const terminalOutput = document.getElementById('experience-terminal-output');
@@ -314,100 +467,6 @@ function typeExperienceTerminal(lang = currentLanguage) {
     let charIndex = 0;
     let isTypingCommand = true;
     let currentCommand = '';
-    
-    function processOutputWithColors(text) {
-        // Divide in righe per processare meglio
-        const lines = text.split('\n');
-        let result = '';
-        
-        for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-            const line = lines[lineIdx];
-            const isLastLine = lineIdx === lines.length - 1;
-            
-            // Se la riga inizia con * commit, colora tutto in giallo e gestisci HEAD/tag
-            if (line.startsWith('* commit')) {
-                let processedLine = '<span class="git-commit">* commit';
-                let restOfLine = line.substring(8);
-                
-                // Processa HEAD e tag nella riga originale (prima di aggiungere markup)
-                const originalLine = line;
-                
-                // Trova tutte le occorrenze di (HEAD e (tag: nella riga originale
-                let parts = [];
-                let lastIndex = 0;
-                
-                // Trova HEAD
-                const headMatch = originalLine.match(/\(HEAD[^)]*\)/);
-                // Trova tag
-                const tagMatch = originalLine.match(/\(tag:[^)]*\)/);
-                
-                // Costruisci la riga processata
-                let lineAfterCommit = originalLine.substring(8);
-                
-                if (headMatch && tagMatch) {
-                    // Entrambi presenti, processa nell'ordine in cui appaiono
-                    const headIndex = originalLine.indexOf(headMatch[0]);
-                    const tagIndex = originalLine.indexOf(tagMatch[0]);
-                    
-                    if (headIndex < tagIndex) {
-                        // HEAD prima di tag
-                        const beforeHead = lineAfterCommit.substring(0, headIndex - 8);
-                        const headPart = lineAfterCommit.substring(headIndex - 8, headIndex - 8 + headMatch[0].length);
-                        const between = lineAfterCommit.substring(headIndex - 8 + headMatch[0].length, tagIndex - 8);
-                        const tagPart = lineAfterCommit.substring(tagIndex - 8, tagIndex - 8 + tagMatch[0].length);
-                        const after = lineAfterCommit.substring(tagIndex - 8 + tagMatch[0].length);
-                        
-                        processedLine += beforeHead + '<span class="git-head">' + headPart + '</span>' + between + '<span class="git-tag">' + tagPart + '</span>' + after;
-                    } else {
-                        // Tag prima di HEAD
-                        const beforeTag = lineAfterCommit.substring(0, tagIndex - 8);
-                        const tagPart = lineAfterCommit.substring(tagIndex - 8, tagIndex - 8 + tagMatch[0].length);
-                        const between = lineAfterCommit.substring(tagIndex - 8 + tagMatch[0].length, headIndex - 8);
-                        const headPart = lineAfterCommit.substring(headIndex - 8, headIndex - 8 + headMatch[0].length);
-                        const after = lineAfterCommit.substring(headIndex - 8 + headMatch[0].length);
-                        
-                        processedLine += beforeTag + '<span class="git-tag">' + tagPart + '</span>' + between + '<span class="git-head">' + headPart + '</span>' + after;
-                    }
-                } else if (headMatch) {
-                    // Solo HEAD
-                    const headIndex = originalLine.indexOf(headMatch[0]);
-                    const beforeHead = lineAfterCommit.substring(0, headIndex - 8);
-                    const headPart = lineAfterCommit.substring(headIndex - 8, headIndex - 8 + headMatch[0].length);
-                    const after = lineAfterCommit.substring(headIndex - 8 + headMatch[0].length);
-                    processedLine += beforeHead + '<span class="git-head">' + headPart + '</span>' + after;
-                } else if (tagMatch) {
-                    // Solo tag
-                    const tagIndex = originalLine.indexOf(tagMatch[0]);
-                    const beforeTag = lineAfterCommit.substring(0, tagIndex - 8);
-                    const tagPart = lineAfterCommit.substring(tagIndex - 8, tagIndex - 8 + tagMatch[0].length);
-                    const after = lineAfterCommit.substring(tagIndex - 8 + tagMatch[0].length);
-                    processedLine += beforeTag + '<span class="git-tag">' + tagPart + '</span>' + after;
-                } else {
-                    processedLine += lineAfterCommit;
-                }
-                
-                processedLine += '</span>';
-                result += processedLine;
-            } else {
-                // Per le altre righe, processa i pipe
-                let processedLine = '';
-                for (let i = 0; i < line.length; i++) {
-                    if (line[i] === '|') {
-                        processedLine += '<span class="git-pipe">|</span>';
-                    } else {
-                        processedLine += line[i];
-                    }
-                }
-                result += processedLine;
-            }
-            
-            if (!isLastLine) {
-                result += '\n';
-            }
-        }
-        
-        return result;
-    }
     
     function typeNextChar() {
         if (commandIndex >= experienceCommands.length) {
@@ -469,7 +528,7 @@ function typeExperienceTerminal(lang = currentLanguage) {
             const outputContainer = terminalOutput.lastElementChild;
             if (charIndex < cmd.output.length) {
                 const textToProcess = cmd.output.substring(0, charIndex + 1);
-                const processedText = processOutputWithColors(textToProcess);
+                const processedText = processTerminalOutputWithColors(textToProcess);
                 outputContainer.innerHTML = processedText;
                 charIndex++;
                 // Scroll automatico
@@ -485,35 +544,13 @@ function typeExperienceTerminal(lang = currentLanguage) {
         }
     }
     
-    // Inizia il typing quando la sezione è visibile (solo se non è già stato avviato per questa lingua)
+    // Inizia il typing quando la sezione è visibile
     const experienceSection = document.getElementById('experience');
-    if (experienceSection && !experienceSection.dataset.terminalLang) {
-        experienceSection.dataset.terminalLang = lang;
-        const terminalObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !entry.target.classList.contains('terminal-started')) {
-                    entry.target.classList.add('terminal-started');
-                    setTimeout(() => typeNextChar(), 200); // Delay iniziale ridotto (da 500ms)
-                    terminalObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.3 });
-        
-        terminalObserver.observe(experienceSection);
-    } else if (experienceSection && experienceSection.dataset.terminalLang !== lang) {
-        // Se la lingua è cambiata, resetta e riavvia
-        experienceSection.classList.remove('terminal-started');
-        experienceSection.dataset.terminalLang = lang;
-        setTimeout(() => typeNextChar(), 200); // Delay iniziale ridotto (da 500ms)
-    }
+    initTerminalObserver(experienceSection, lang, typeNextChar);
 }
 
 // Inizializza quando il DOM è pronto
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', typeExperienceTerminal);
-} else {
-    typeExperienceTerminal();
-}
+onDOMReady(typeExperienceTerminal);
 
 // GitHub Projects Loader con cache e gestione rate limit
 async function loadGitHubProjects() {
@@ -826,11 +863,7 @@ function createProjectCard(repo, index) {
 }
 
 // Inizializza il caricamento progetti
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadGitHubProjects);
-} else {
-    loadGitHubProjects();
-}
+onDOMReady(loadGitHubProjects);
 
 // PDF Download Function
 function downloadPDF() {
@@ -850,45 +883,12 @@ function downloadPDF() {
 }
 
 // Aggiungi event listener al pulsante di download
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        const downloadBtn = document.getElementById('download-pdf');
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', downloadPDF);
-        }
-    });
-} else {
+onDOMReady(() => {
     const downloadBtn = document.getElementById('download-pdf');
     if (downloadBtn) {
         downloadBtn.addEventListener('click', downloadPDF);
     }
-}
-
-// Soft skills cards animation removed - soft skills section removed
-
-// Miglioramento animazioni scroll con requestAnimationFrame
-let ticking = false;
-
-function updateScrollAnimations() {
-    if (!ticking) {
-        window.requestAnimationFrame(() => {
-            // Le animazioni sono gestite da IntersectionObserver
-            ticking = false;
-        });
-        ticking = true;
-    }
-}
-
-// Throttle per scroll events
-let lastScrollTop = 0;
-window.addEventListener('scroll', () => {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    
-    if (Math.abs(scrollTop - lastScrollTop) > 5) {
-        updateScrollAnimations();
-        lastScrollTop = scrollTop;
-    }
-}, { passive: true });
+});
 
 // Smooth reveal per elementi che entrano nel viewport
 const revealObserver = new IntersectionObserver((entries) => {
@@ -913,17 +913,10 @@ document.querySelectorAll('.section, .project-card').forEach(el => {
 // ANIMAZIONI AVANZATE
 // ============================================
 
-// Scroll Progress Bar
+// Scroll Progress Bar initialization (handled by unified scroll handler)
 function initScrollProgress() {
-    const progressBar = document.querySelector('.scroll-progress');
-    if (!progressBar) return;
-    
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-        progressBar.style.width = scrollPercent + '%';
-    }, { passive: true });
+    // Progress bar is now handled by the unified scroll handler
+    // This function is kept for compatibility but does nothing
 }
 
 // Particelle Animate
@@ -981,24 +974,10 @@ function addMagneticEffect() {
     });
 }
 
-// Navbar Scroll Effect
+// Navbar Scroll Effect (handled by unified scroll handler)
 function initNavbarScroll() {
-    const navbar = document.querySelector('.navbar');
-    if (!navbar) return;
-    
-    let lastScrollTop = 0;
-    
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (scrollTop > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-        
-        lastScrollTop = scrollTop;
-    }, { passive: true });
+    // Navbar scroll is now handled by the unified scroll handler
+    // This function is kept for compatibility but does nothing
 }
 
 // Inizializza tutte le animazioni
@@ -1010,11 +989,7 @@ function initAllAnimations() {
 }
 
 // Esegui quando il DOM è pronto
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAllAnimations);
-} else {
-    initAllAnimations();
-}
+onDOMReady(initAllAnimations);
 
 // ============================================
 // SKILLS NETWORK GRAPH
@@ -1408,15 +1383,6 @@ function initSkillsNetwork(lang = currentLanguage) {
     const svg = d3.select('#skills-network-2d')
         .attr('width', width + (padding * 2))
         .attr('height', height + (padding * 2));
-    
-    // Zoom disabilitato
-    // const zoom = d3.zoom()
-    //     .scaleExtent([0.3, 2])
-    //     .on('zoom', (event) => {
-    //         g.attr('transform', event.transform);
-    //     });
-    
-    // svg.call(zoom);
     
     const g = svg.append('g');
     
@@ -1883,7 +1849,11 @@ function showCategoryDetails(categoryNode, skillsData) {
             
             let itemContent = '';
             if (child.icon) {
-                itemContent += `<img src="${child.icon}" alt="${child.name}" class="category-item-icon" style="width: 24px; height: 24px; filter: brightness(0) invert(1); margin-right: 0.75rem;">`;
+                // Don't apply filter to language flags, cursor, or windows icons
+                const filterStyle = (child.type === 'language' || child.id === 'cursor' || child.id === 'windows') 
+                    ? '' 
+                    : 'filter: brightness(0) invert(1);';
+                itemContent += `<img src="${child.icon}" alt="${child.name}" class="category-item-icon" style="width: 24px; height: 24px; ${filterStyle} margin-right: 0.75rem;">`;
             }
             itemContent += `
                 <div class="category-item-content">
@@ -1932,22 +1902,7 @@ function initSkillPanel() {
 }
 
 // Inizializza quando il DOM è pronto
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        initSkillsNetwork();
-        initSkillPanel();
-        
-        // Gestisci il resize per passare da mobile a desktop e viceversa
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                const lang = currentLanguage;
-                initSkillsNetwork(lang);
-            }, 250);
-        });
-    });
-} else {
+onDOMReady(() => {
     initSkillsNetwork();
     initSkillPanel();
     
@@ -1960,5 +1915,5 @@ if (document.readyState === 'loading') {
             initSkillsNetwork(lang);
         }, 250);
     });
-}
+});
 
