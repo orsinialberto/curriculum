@@ -871,7 +871,7 @@ function downloadPDF() {
     if (!downloadBtn) return;
     
     // Apri il PDF in una nuova finestra
-    window.open('Curriculum.pdf', '_blank');
+    window.open('/curriculum/Curriculum.pdf', '_blank');
 }
 
 // Aggiungi event listener al pulsante di download
@@ -1111,7 +1111,7 @@ function getSkillsData(lang = currentLanguage) {
               experience: skillTranslations.vscode.experience,
               description: skillTranslations.vscode.description },
             { id: 'cursor', name: 'Cursor', category: 'development-tools', type: 'skill', size: 35,
-              icon: 'images/cursor-2.png',
+              icon: '/curriculum/images/cursor-2.png',
               experience: skillTranslations.cursor.experience,
               description: skillTranslations.cursor.description },
             
@@ -1145,7 +1145,7 @@ function getSkillsData(lang = currentLanguage) {
               experience: skillTranslations.macos.experience,
               description: skillTranslations.macos.description },
             { id: 'windows', name: 'Windows', category: 'operating-systems', type: 'skill', size: 35,
-              icon: 'images/windows.png',
+              icon: '/curriculum/images/windows.png',
               experience: skillTranslations.windows.experience,
               description: skillTranslations.windows.description },
             
